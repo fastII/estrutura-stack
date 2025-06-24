@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: loki
+      version: "5.37.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  values:
+    loki:
+      storage:
+        type: filesystem
+      schemaConfig:
+        configs:
+          - from: "2024-01-01"
+            store: boltdb-shipper
+            object_store: filesystem
+            schema: v12
+            index:
+              prefix: loki_index_
+              period: 24h
